@@ -1,0 +1,11 @@
+[package]
+name = "rcli"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Rust CLI"
+repository = "https://github.com/InChh/rcli"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
