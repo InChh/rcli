@@ -14,6 +14,8 @@ pub struct Opts {
 pub enum SubCommand {
     #[command(about = "Show csv or convert csv to other formats")]
     Csv(CsvOpts),
+    #[command(about = "Generate a custom password")]
+    GenPass(GenPassOpts),
 }
 
 #[derive(Debug, Parser)]
@@ -26,6 +28,25 @@ pub struct CsvOpts {
     pub format: OutputFormat,
     #[arg(long)]
     pub headers: bool,
+}
+
+#[derive(Debug, Parser)]
+pub struct GenPassOpts {
+    /// Length of the generated password
+    #[arg(short, long, default_value_t = 12)]
+    pub length: u8,
+    /// Include lowercase letters (a-z)
+    #[arg(long, default_value_t = true)]
+    pub lowercase: bool,
+    /// Include uppercase letters (A-Z)
+    #[arg(long, default_value_t = true)]
+    pub uppercase: bool,
+    /// Include numbers (0-9)
+    #[arg(long, default_value_t = true)]
+    pub numbers: bool,
+    /// Include special characters (!@#$%^&*()_+-=[]{}|;:,.<>?)
+    #[arg(long, default_value_t = true)]
+    pub special: bool,
 }
 
 #[derive(Debug, Copy, Clone)]
