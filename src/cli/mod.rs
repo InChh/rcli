@@ -3,6 +3,7 @@ use clap::Parser;
 pub mod base64;
 pub mod csv;
 pub mod gen_pass;
+pub mod text;
 
 #[derive(Debug, Parser)]
 #[command(name="rcli", author, version, about, long_about = None)]
@@ -19,6 +20,8 @@ pub enum SubCommand {
     GenPass(gen_pass::GenPassOpts),
     #[command(subcommand)]
     Base64(base64::Base64SubCommand),
+    #[command(subcommand)]
+    Text(text::TextSubCommand),
 }
 
 pub fn check_input(s: &str) -> Result<String, &'static str> {
