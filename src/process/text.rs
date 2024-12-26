@@ -42,8 +42,8 @@ impl Blake3 {
         Self { key }
     }
 
-    pub fn try_new(key: &[u8]) -> Result<Self> {
-        let key = key.try_into()?;
+    pub fn try_new(key: impl AsRef<[u8]>) -> Result<Self> {
+        let key = key.as_ref().try_into()?;
         Ok(Self { key })
     }
 
@@ -89,9 +89,9 @@ impl Ed25519Signer {
     pub fn new(key: SigningKey) -> Self {
         Self { key }
     }
-    pub fn try_new(key: &[u8]) -> Result<Self> {
+    pub fn try_new(key: impl AsRef<[u8]>) -> Result<Self> {
         Ok(Self {
-            key: SigningKey::from_bytes(key.try_into()?),
+            key: SigningKey::from_bytes(key.as_ref().try_into()?),
         })
     }
 
@@ -118,9 +118,9 @@ impl Ed25519Verifier {
         Self { key }
     }
 
-    pub fn try_new(key: &[u8]) -> Result<Self> {
+    pub fn try_new(key: impl AsRef<[u8]>) -> Result<Self> {
         Ok(Self {
-            key: VerifyingKey::from_bytes(key.try_into()?)?,
+            key: VerifyingKey::from_bytes(key.as_ref().try_into()?)?,
         })
     }
     pub fn from_file(key_file: &str) -> Result<Self> {
