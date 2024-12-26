@@ -3,3 +3,12 @@ GET http://localhost:8080/Cargo.toml
 
 ### Get a none exist file
 GET http://localhost:8080/abc.txt
+
+### Get a directory
+GET http://localhost:8080/fixtures
+
+### Get a exist file using tower http ServeDir
+GET http://localhost:8080/tower-file-server/Cargo.toml
+
+### Get a none exist file using tower http ServeDir
+GET http://localhost:8080/tower-file-server/abc.txt
