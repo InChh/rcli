@@ -1,0 +1,5 @@
+### Get a file
+GET http://localhost:8080/Cargo.toml
+
+### Get a none exist file
+GET http://localhost:8080/abc.txt

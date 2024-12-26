@@ -3,8 +3,8 @@ use clap::Parser;
 pub mod base64;
 pub mod csv;
 pub mod gen_pass;
+pub mod http;
 pub mod text;
-
 #[derive(Debug, Parser)]
 #[command(name="rcli", author, version, about, long_about = None)]
 pub struct Opts {
@@ -22,6 +22,8 @@ pub enum SubCommand {
     Base64(base64::Base64SubCommand),
     #[command(subcommand)]
     Text(text::TextSubCommand),
+    #[command(subcommand)]
+    Http(http::HttpSubCommand),
 }
 
 pub fn check_input(s: &str) -> Result<String, &'static str> {

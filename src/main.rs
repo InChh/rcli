@@ -1,14 +1,18 @@
 use clap::Parser;
 use rcli::cli::base64::Base64SubCommand;
+use rcli::cli::http::HttpSubCommand;
 use rcli::cli::text::TextSubCommand;
 use rcli::cli::{Opts, SubCommand};
 use rcli::process::base64::{process_decode, process_encode};
 use rcli::process::csv::process_csv;
 use rcli::process::gen_pass::generate_password;
+use rcli::process::http::http_serve;
 use rcli::process::text::{generate_key, process_sign, process_verify};
 use zxcvbn::zxcvbn;
 
-fn main() -> anyhow::Result<()> {
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    tracing_subscriber::fmt::init();
     let opts = Opts::parse();
     match opts.command {
         SubCommand::Csv(opts) => {
@@ -58,6 +62,11 @@ fn main() -> anyhow::Result<()> {
             }
             TextSubCommand::GenerateKey(opts) => {
                 generate_key(opts.format, opts.output)?;
+            }
+        },
+        SubCommand::Http(subcommand) => match subcommand {
+            HttpSubCommand::Serve(opts) => {
+                http_serve(opts.dir, opts.port).await?;
             }
         },
     }
