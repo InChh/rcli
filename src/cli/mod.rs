@@ -1,3 +1,4 @@
+use crate::CmdExecutor;
 use clap::Parser;
 
 pub mod base64;
@@ -18,12 +19,24 @@ pub enum SubCommand {
     Csv(csv::CsvOpts),
     #[command(about = "Generate a custom password")]
     GenPass(gen_pass::GenPassOpts),
-    #[command(subcommand)]
+    #[command(subcommand, about = "Base64 encode/decode")]
     Base64(base64::Base64SubCommand),
-    #[command(subcommand)]
+    #[command(subcommand, about = "Text sign/verify")]
     Text(text::TextSubCommand),
-    #[command(subcommand)]
+    #[command(subcommand, about = "HTTP static file server")]
     Http(http::HttpSubCommand),
+}
+
+impl CmdExecutor for SubCommand {
+    async fn execute(self) -> anyhow::Result<()> {
+        match self {
+            SubCommand::Csv(opts) => opts.execute().await,
+            SubCommand::GenPass(opts) => opts.execute().await,
+            SubCommand::Base64(subcommand) => subcommand.execute().await,
+            SubCommand::Text(subcommand) => subcommand.execute().await,
+            SubCommand::Http(subcommand) => subcommand.execute().await,
+        }
+    }
 }
 
 pub fn check_input(s: &str) -> Result<String, &'static str> {

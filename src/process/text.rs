@@ -7,7 +7,6 @@ use base64::Engine;
 use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
 use rand::rngs::OsRng;
 use std::io::Read;
-use std::path::PathBuf;
 
 pub trait TextSigner {
     fn sign(&self, reader: impl Read) -> Result<Vec<u8>>;
@@ -209,30 +208,14 @@ impl KeyGenerator for CommonKeyGenerator {
     }
 }
 
-pub fn generate_key(format: TextSignFormat, output: PathBuf) -> Result<()> {
+pub fn generate_key(format: TextSignFormat) -> Result<Key> {
     let key_length = match format {
         TextSignFormat::Blake3 => blake3::KEY_LEN,
         TextSignFormat::Ed25519 => ed25519_dalek::SECRET_KEY_LENGTH,
     };
     let generator = CommonKeyGenerator::new(key_length, format);
-    let key = generator.generate_key()?;
 
-    match key {
-        Key::Symmetric { key } => {
-            let output = output.join("blake3.key");
-            std::fs::write(output, key)?;
-        }
-        Key::Asymmetric { public, secret } => {
-            let public_key = output.join("public.key");
-            let secret_key = output.join("secret.key");
-            std::fs::write(public_key, public)?;
-            std::fs::write(secret_key, secret)?;
-        }
-    }
-
-    eprintln!("Key generated to {:?}", output);
-
-    Ok(())
+    generator.generate_key()
 }
 
 #[cfg(test)]

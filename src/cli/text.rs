@@ -1,4 +1,6 @@
 use crate::cli::check_input;
+use crate::process::text::{generate_key, process_sign, process_verify, Key};
+use crate::CmdExecutor;
 use clap::Parser;
 use std::fmt;
 use std::path::PathBuf;
@@ -90,5 +92,55 @@ impl fmt::Display for TextSignFormat {
                 write!(f, "ed25519")
             }
         }
+    }
+}
+
+impl CmdExecutor for TextSubCommand {
+    async fn execute(self) -> anyhow::Result<()> {
+        match self {
+            TextSubCommand::Sign(opts) => opts.execute().await,
+            TextSubCommand::Verify(opts) => opts.execute().await,
+            TextSubCommand::GenerateKey(opts) => opts.execute().await,
+        }
+    }
+}
+
+impl CmdExecutor for TextSignOpts {
+    async fn execute(self) -> anyhow::Result<()> {
+        let signed = process_sign(&self.input, &self.key, self.format)?;
+        println!("Signature: {}", signed);
+        Ok(())
+    }
+}
+
+impl CmdExecutor for TextVerifyOpts {
+    async fn execute(self) -> anyhow::Result<()> {
+        let verified = process_verify(&self.input, &self.key, &self.sig, self.format)?;
+        match verified {
+            true => {
+                println!("Signature verified");
+            }
+            false => {
+                eprintln!("Signature not verified");
+            }
+        }
+        Ok(())
+    }
+}
+
+impl CmdExecutor for TextGenerateKeyOpts {
+    async fn execute(self) -> anyhow::Result<()> {
+        let key = generate_key(self.format)?;
+        match key {
+            Key::Symmetric { key } => {
+                tokio::fs::write(self.output.join("blake3.key"), key).await?;
+            }
+            Key::Asymmetric { public, secret } => {
+                tokio::fs::write(self.output.join("pk.pem"), public).await?;
+                tokio::fs::write(self.output.join("sk.pem"), secret).await?;
+            }
+        }
+        println!("Key generated to {:?}", self.output);
+        Ok(())
     }
 }

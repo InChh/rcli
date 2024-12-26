@@ -1,5 +1,7 @@
 use std::str::FromStr;
 
+use crate::process::base64::{process_decode, process_encode};
+use crate::CmdExecutor;
 use clap::Parser;
 
 #[derive(Debug, Parser)]
@@ -12,17 +14,21 @@ pub enum Base64SubCommand {
 
 #[derive(Debug, Parser)]
 pub struct Base64EncodeOpts {
-    #[arg(short, long, value_parser = super::check_input, default_value = "-", help = "Input string to encode")]
+    #[arg(short, long, value_parser = super::check_input, default_value = "-", help = "Input string to encode"
+    )]
     pub input: String,
-    #[arg(long, value_parser = Base64Format::from_str, default_value = "standard", help = "Base64 format to use")]
+    #[arg(long, value_parser = Base64Format::from_str, default_value = "standard", help = "Base64 format to use"
+    )]
     pub format: Base64Format,
 }
 
 #[derive(Debug, Parser)]
 pub struct Base64DecodeOpts {
-    #[arg(short, long, value_parser = super::check_input, default_value = "-", help = "Base64 string to decode")]
+    #[arg(short, long, value_parser = super::check_input, default_value = "-", help = "Base64 string to decode"
+    )]
     pub input: String,
-    #[arg(long, value_parser = Base64Format::from_str, default_value = "standard", help = "Base64 format to use")]
+    #[arg(long, value_parser = Base64Format::from_str, default_value = "standard", help = "Base64 format to use"
+    )]
     pub format: Base64Format,
 }
 
@@ -50,5 +56,21 @@ impl FromStr for Base64Format {
             "urlsafe" => Ok(Base64Format::UrlSafe),
             _ => Err(anyhow::anyhow!("Not supported format: {}", s)),
         }
+    }
+}
+
+impl CmdExecutor for Base64SubCommand {
+    async fn execute(self) -> anyhow::Result<()> {
+        match self {
+            Base64SubCommand::Encode(opts) => {
+                let encoded = process_encode(&opts.input, opts.format)?;
+                println!("{}", encoded);
+            }
+            Base64SubCommand::Decode(opts) => {
+                let decoded = process_decode(&opts.input, opts.format)?;
+                println!("{}", String::from_utf8_lossy(&decoded));
+            }
+        }
+        Ok(())
     }
 }
