@@ -5,6 +5,7 @@ pub mod base64;
 pub mod csv;
 pub mod gen_pass;
 pub mod http;
+pub mod jwt;
 pub mod text;
 #[derive(Debug, Parser)]
 #[command(name="rcli", author, version, about, long_about = None)]
@@ -26,6 +27,8 @@ pub enum SubCommand {
     Text(text::TextSubCommand),
     #[command(subcommand, about = "HTTP static file server")]
     Http(http::HttpSubCommand),
+    #[command(subcommand, about = "JWT sign/verify")]
+    Jwt(jwt::JwtSubCommand),
 }
 
 pub fn check_input(s: &str) -> Result<String, &'static str> {

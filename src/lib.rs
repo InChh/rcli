@@ -8,6 +8,7 @@ pub use crate::base64::*;
 pub use crate::csv::*;
 pub use crate::gen_pass::*;
 pub use crate::http::*;
+pub use crate::jwt::*;
 pub use crate::text::*;
 pub use cli::*;
 
