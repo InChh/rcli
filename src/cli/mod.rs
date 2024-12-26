@@ -1,5 +1,5 @@
-use crate::CmdExecutor;
 use clap::Parser;
+use enum_dispatch::enum_dispatch;
 
 pub mod base64;
 pub mod csv;
@@ -14,6 +14,7 @@ pub struct Opts {
 }
 
 #[derive(Debug, Parser)]
+#[enum_dispatch(CmdExecutor)]
 pub enum SubCommand {
     #[command(about = "Show csv or convert csv to other formats")]
     Csv(csv::CsvOpts),
@@ -25,18 +26,6 @@ pub enum SubCommand {
     Text(text::TextSubCommand),
     #[command(subcommand, about = "HTTP static file server")]
     Http(http::HttpSubCommand),
-}
-
-impl CmdExecutor for SubCommand {
-    async fn execute(self) -> anyhow::Result<()> {
-        match self {
-            SubCommand::Csv(opts) => opts.execute().await,
-            SubCommand::GenPass(opts) => opts.execute().await,
-            SubCommand::Base64(subcommand) => subcommand.execute().await,
-            SubCommand::Text(subcommand) => subcommand.execute().await,
-            SubCommand::Http(subcommand) => subcommand.execute().await,
-        }
-    }
 }
 
 pub fn check_input(s: &str) -> Result<String, &'static str> {

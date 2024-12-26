@@ -2,11 +2,13 @@ use crate::cli::check_input;
 use crate::process::text::{generate_key, process_sign, process_verify, Key};
 use crate::CmdExecutor;
 use clap::Parser;
+use enum_dispatch::enum_dispatch;
 use std::fmt;
 use std::path::PathBuf;
 use std::str::FromStr;
 
 #[derive(Debug, Parser)]
+#[enum_dispatch(CmdExecutor)]
 pub enum TextSubCommand {
     #[command(about = "Sign a text")]
     Sign(TextSignOpts),
@@ -91,16 +93,6 @@ impl fmt::Display for TextSignFormat {
             TextSignFormat::Ed25519 => {
                 write!(f, "ed25519")
             }
-        }
-    }
-}
-
-impl CmdExecutor for TextSubCommand {
-    async fn execute(self) -> anyhow::Result<()> {
-        match self {
-            TextSubCommand::Sign(opts) => opts.execute().await,
-            TextSubCommand::Verify(opts) => opts.execute().await,
-            TextSubCommand::GenerateKey(opts) => opts.execute().await,
         }
     }
 }
