@@ -44,7 +44,7 @@ mod tests {
     fn test_check_input() {
         assert_eq!(check_input("-"), Ok("-".to_string()));
         assert_eq!(check_input("*"), Err("Input file not exists"));
-        assert_eq!(check_input("cargo.toml"), Ok("cargo.toml".to_string()));
+        assert_eq!(check_input("Cargo.toml"), Ok("Cargo.toml".to_string()));
         assert_eq!(
             check_input("nonexistent_file.txt"),
             Err("Input file not exists")
